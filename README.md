@@ -1,2 +1,3 @@
 # final-project-final-project-team-7
-haoxuan
+Haoxuan Zhang
+Yuechen Xu
