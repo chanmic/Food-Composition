@@ -20,9 +20,10 @@ public class FoodUtils {
         public String ndbno;
     }
 
-    public static String buildFoodSearchURL(String query) {
+    public static String buildFoodSearchURL(String query, String max) {
         String url = "https://api.nal.usda.gov/ndb/search/?format=json&q=" + query +
-                "&sort=n&max=25&offset=0&api_key=dDv0ux0V3dyzAsiqNcyVuztwngdsspzARn2vZpYu";
+                "&sort=n&max=" + max +
+                "&offset=0&api_key=dDv0ux0V3dyzAsiqNcyVuztwngdsspzARn2vZpYu";
 
         return url;
     }
