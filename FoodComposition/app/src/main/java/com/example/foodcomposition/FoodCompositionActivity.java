@@ -2,11 +2,14 @@ package com.example.foodcomposition;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -94,6 +97,34 @@ public class FoodCompositionActivity extends AppCompatActivity
                 mCompositionListRV.setVisibility(View.INVISIBLE);
             }
             mLoadingPB.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search_result_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_share:
+                shareRepo();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public void shareRepo() {
+        if (mRepo != null) {
+            String shareText = getString(R.string.share_repo_text,mRepo.name,mRepo.ndbno);
+            ShareCompat.IntentBuilder.from(this)
+                    .setType("text/plain")
+                    .setText(shareText)
+                    .setChooserTitle(R.string.share_chooser_title)
+                    .startChooser();
         }
     }
 }

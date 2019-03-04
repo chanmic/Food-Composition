@@ -3,4 +3,19 @@
     <string name="search_box_hint">Search Food name...</string>
     <string name="search_button_text">Do Search</string>
     <string name="loading_error">Unable to run query.  Check internet.</string>
+    <string name="share_repo_text">%1$s: "ndbno number is: "%2$s</string>
+    <string name="share_chooser_title">How do you want to share this repo?</string>
+    <string name="action_share">Share</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Strings for sort-by preference -->
+    <string name="pref_food_max" translatable="false">Food Max Number</string>
+    <string name="pref_max_title">Food Max Number</string>
+    <string name="pref_max_entry_25">25</string>
+    <string name="pref_max_value_25" translatable="false">25</string>
+    <string name="pref_max_entry_15">15</string>
+    <string name="pref_max_value_15" translatable="false">15</string>
+    <string name="pref_max_entry_5">5</string>
+    <string name="pref_max_value_5" translatable="false">5</string>
+    <string name="pref_max_default">@string/pref_max_entry_25</string>
 </resources>
