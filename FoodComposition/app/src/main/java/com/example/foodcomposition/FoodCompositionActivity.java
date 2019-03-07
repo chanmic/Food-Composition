@@ -1,7 +1,9 @@
 package com.example.foodcomposition;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -89,8 +91,10 @@ public class FoodCompositionActivity extends AppCompatActivity
             if (s != null) {
                 mLoadingErrorTV.setVisibility(View.INVISIBLE);
                 mCompositionListRV.setVisibility(View.VISIBLE);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String sort = preferences.getString(getString(R.string.pref_food_sort), getString(R.string.pref_sort_default));
                 CompositionUrils.CompositionRepo[] repos
-                        = CompositionUrils.parseCompositionSearchResults(s);
+                        = CompositionUrils.parseCompositionSearchResults(s, sort);
                 mCompositionAdapter.updateSearchResults(repos);
             } else {
                 mLoadingErrorTV.setVisibility(View.VISIBLE);
