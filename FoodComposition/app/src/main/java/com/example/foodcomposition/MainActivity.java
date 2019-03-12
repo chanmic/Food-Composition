@@ -6,9 +6,14 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.foodcomposition.data.FoodNameRepo;
 import com.example.foodcomposition.utils.FoodUtils;
 import com.example.foodcomposition.utils.NetworkUtils;
 
@@ -42,10 +48,14 @@ public class MainActivity extends AppCompatActivity
     private TextView mLoadingErrorTV;
     private ProgressBar mLoadingPB;
     private FoodAdapter mFoodAdapter;
+    private DrawerLayout mDrawerLayout;
+
+    private NavigationView navigationView;
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     private FoodUtils.FoodRepo[] mRepos;
+    private FoodNameRepo mRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +72,16 @@ public class MainActivity extends AppCompatActivity
 
         mFoodAdapter = new FoodAdapter(this);
         mFoodListRV.setAdapter(mFoodAdapter);
+
+        //Nav drawer
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.nv_nav_drawer);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)){
             mRepos = (FoodUtils.FoodRepo[]) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
@@ -87,7 +107,10 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String max = preferences.getString(getString(R.string.pref_food_max),getString(R.string.pref_max_default));
 
-        String url = FoodUtils.buildFoodSearchURL(query,max);
+        mRepo = new FoodNameRepo();
+        mRepo.FoodName = query;
+
+        String url = FoodUtils.buildFoodSearchURL(mRepo.FoodName,max);
         Log.d(TAG, "querying search URL: " + url);
         //new FoodSearchTask().execute(url);
 
@@ -99,7 +122,7 @@ public class MainActivity extends AppCompatActivity
         listener = new SharedPreferences.OnSharedPreferenceChangeListener() {
             @Override
             public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-                refreshDisplay(query);
+                refreshDisplay(mRepo.FoodName);
             }
         };
         preferences.registerOnSharedPreferenceChangeListener(listener);
@@ -174,6 +197,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         switch (item.getItemId()) {
+            case android.R.id.home:
+                mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
             case R.id.action_settings:
                 Log.d(TAG,"click setting");
                 Intent intent = new Intent(this, SettingsActivity.class);
@@ -183,7 +209,6 @@ public class MainActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
         }
     }
-
 
 /*    class FoodSearchTask extends AsyncTask<String, Void, String> {
 
