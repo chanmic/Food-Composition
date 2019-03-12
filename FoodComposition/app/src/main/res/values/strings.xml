@@ -31,4 +31,7 @@
     <string name="pref_sort_units_entry">Units</string>
     <string name="pref_sort_units_value" translatable="false">Units</string>
     <string name="pref_sort_default">@string/pref_sort_default_entry</string>
+
+    <!-- nav header text -->
+    <string name="nav_header">Search History</string>
 </resources>
