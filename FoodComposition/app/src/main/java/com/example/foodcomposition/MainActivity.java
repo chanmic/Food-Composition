@@ -1,5 +1,7 @@
 package com.example.foodcomposition;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -32,10 +34,11 @@ import com.example.foodcomposition.utils.FoodUtils;
 import com.example.foodcomposition.utils.NetworkUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements FoodAdapter.OnSearchItemClickListener,
-        LoaderManager.LoaderCallbacks<String> {
+        implements FoodAdapter.OnSearchItemClickListener, LoaderManager.LoaderCallbacks<String>, NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String REPOS_ARRAY_KEY = "foodRepos";
@@ -54,7 +57,7 @@ public class MainActivity extends AppCompatActivity
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
-    private FoodUtils.FoodRepo[] mRepos;
+    private ArrayList<FoodNameRepo> mRepos;
     private FoodNameRepo mRepo;
 
     @Override
@@ -75,16 +78,19 @@ public class MainActivity extends AppCompatActivity
 
         //Nav drawer
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nv_nav_drawer);
+        NavigationView navigationView = findViewById(R.id.nv_nav_drawer);
+        navigationView.setNavigationItemSelectedListener(this);
+        //navigationView = findViewById(R.id.nv_nav_drawer);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)){
-            mRepos = (FoodUtils.FoodRepo[]) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
+            mRepos = (ArrayList<FoodNameRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
             mFoodAdapter.updateSearchResults(mRepos);
         }
 
@@ -100,7 +106,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
     }
 
     private void doFoodSearch(final String query) {
@@ -143,7 +148,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSearchItemClick(FoodUtils.FoodRepo repo) {
+    public void onSearchItemClick(FoodNameRepo repo) {
         Log.d(TAG, "click on item");
         Intent intent = new Intent(this, FoodCompositionActivity.class);
         intent.putExtra(FoodUtils.EXTRA_FOOD_REPO, repo);
@@ -210,6 +215,26 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        mDrawerLayout.closeDrawers();
+        switch (menuItem.getItemId()) {
+            case R.id.nav_search:
+                return true;
+            case R.id.nav_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            case R.id.nav_saved_repos:
+                Intent savedReposIntent = new Intent(this, SavedReposActivity.class);
+                startActivity(savedReposIntent);
+                return true;
+            default:
+                return false;
+        }
+    }
+}
+
 /*    class FoodSearchTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -243,5 +268,5 @@ public class MainActivity extends AppCompatActivity
             }
             mLoadingPB.setVisibility(View.INVISIBLE);
         }
-    }*/
-}
+    } */
+

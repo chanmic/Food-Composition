@@ -10,6 +10,7 @@ import com.example.foodcomposition.utils.NetworkUtils;
 import java.io.IOException;
 
 public class FoodCompositionSearchLoader extends AsyncTaskLoader<String> {
+
     private static final String TAG = FoodCompositionSearchLoader.class.getSimpleName();
 
     private String mFoodSearchJSON;
@@ -38,7 +39,7 @@ public class FoodCompositionSearchLoader extends AsyncTaskLoader<String> {
         if (mURL != null) {
             String results = null;
             try {
-                Log.d(TAG, "loading results from GitHub with URL: " + mURL);
+                Log.d(TAG, "loading results from Food Composition with URL: " + mURL);
                 results = NetworkUtils.doHTTPGet(mURL);
             } catch (IOException e) {
                 e.printStackTrace();

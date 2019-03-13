@@ -34,4 +34,10 @@
 
     <!-- nav header text -->
     <string name="nav_header">Search History</string>
+
+    <!-- nav search, saved, settings -->
+    <string name="nav_search">Search</string>
+    <string name="nav_saved_repos">Saved repos</string>
+    <string name="nav_settings">Settings</string>
+
 </resources>
