@@ -1,9 +1,11 @@
 package com.example.foodcomposition;
 
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,9 +15,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.foodcomposition.data.FoodNameRepo;
 import com.example.foodcomposition.utils.CompositionUrils;
 import com.example.foodcomposition.utils.FoodUtils;
 import com.example.foodcomposition.utils.NetworkUtils;
@@ -32,8 +36,11 @@ public class FoodCompositionActivity extends AppCompatActivity
     private TextView mLoadingErrorTV;
     private ProgressBar mLoadingPB;
     private CompositionAdapter mCompositionAdapter;
+    private ImageView mRepoBookmarkIV;
 
-    private FoodUtils.FoodRepo mRepo;
+    private FoodCompositionViewModel mFoodCompositionViewModel;
+    private FoodNameRepo mRepo;
+    private boolean mIsSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +61,37 @@ public class FoodCompositionActivity extends AppCompatActivity
         mRepo = null;
         Intent intent = getIntent();
         if (intent != null && intent.hasExtra(FoodUtils.EXTRA_FOOD_REPO)) {
-            mRepo = (FoodUtils.FoodRepo) intent.getSerializableExtra(FoodUtils.EXTRA_FOOD_REPO);
-            mRepoNameTV.setText(mRepo.name);
+            mRepo = (FoodNameRepo) intent.getSerializableExtra(FoodUtils.EXTRA_FOOD_REPO);
+            mRepoNameTV.setText(mRepo.FoodName);
 
             String url = CompositionUrils.buildCompositionSearchURL(mRepo.ndbno);
             new CompositionTask().execute(url);
+
+            mFoodCompositionViewModel.getFoodNameRepoByName(mRepo.FoodName).observe(this, new Observer<FoodNameRepo>() {
+                @Override
+                public void onChanged(@Nullable FoodNameRepo repo) {
+                    if (repo != null) {
+                        mIsSaved = true;
+                        mRepoBookmarkIV.setImageResource(R.drawable.ic_bookmark_black_24dp);
+                    } else {
+                        mIsSaved = false;
+                        mRepoBookmarkIV.setImageResource(R.drawable.ic_bookmark_border_black_24dp);
+                    }
+                }
+            });
         }
+        mRepoBookmarkIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mRepo != null) {
+                    if (!mIsSaved) {
+                        mFoodCompositionViewModel.insertFoodNameRepo(mRepo);
+                    } else {
+                        mFoodCompositionViewModel.deleteFoodNameRepo(mRepo);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -123,7 +155,7 @@ public class FoodCompositionActivity extends AppCompatActivity
 
     public void shareRepo() {
         if (mRepo != null) {
-            String shareText = getString(R.string.share_repo_text,mRepo.name,mRepo.ndbno);
+            String shareText = getString(R.string.share_repo_text,mRepo.FoodName,mRepo.ndbno);
             ShareCompat.IntentBuilder.from(this)
                     .setType("text/plain")
                     .setText(shareText)

@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity
         implements FoodAdapter.OnSearchItemClickListener,
         LoaderManager.LoaderCallbacks<String>, FoodRepoAdapter.OnFoodNameClickListener {
 
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String REPOS_ARRAY_KEY = "foodRepos";
     private static final String SEARCH_URL_KEY = "foodSearchURL";
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
-    private FoodUtils.FoodRepo[] mRepos;
+    private ArrayList<FoodNameRepo> mRepos;
     private FoodNameRepo mRepo;
     private boolean mIsSaved = false;
 
@@ -83,16 +84,19 @@ public class MainActivity extends AppCompatActivity
         mFoodViewModal = ViewModelProviders.of(this).get(FoodViewModal.class);
         //Nav drawer
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nv_nav_drawer);
+        NavigationView navigationView = findViewById(R.id.nv_nav_drawer);
+        navigationView.setNavigationItemSelectedListener(this);
+        //navigationView = findViewById(R.id.nv_nav_drawer);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_nav_menu);
 
         if(savedInstanceState != null && savedInstanceState.containsKey(REPOS_ARRAY_KEY)){
-            mRepos = (FoodUtils.FoodRepo[]) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
+            mRepos = (ArrayList<FoodNameRepo>) savedInstanceState.getSerializable(REPOS_ARRAY_KEY);
             mFoodAdapter.updateSearchResults(mRepos);
         }
 
@@ -121,7 +125,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
-
     }
 
     private void doFoodSearch(final String query) {
@@ -176,7 +179,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSearchItemClick(FoodUtils.FoodRepo repo) {
+    public void onSearchItemClick(FoodNameRepo repo) {
         Log.d(TAG, "click on item");
         Intent intent = new Intent(this, FoodCompositionActivity.class);
         intent.putExtra(FoodUtils.EXTRA_FOOD_REPO, repo);
@@ -250,6 +253,7 @@ public class MainActivity extends AppCompatActivity
         mDrawerLayout.closeDrawers();
     }
 
+
 /*    class FoodSearchTask extends AsyncTask<String, Void, String> {
 
         @Override
@@ -283,5 +287,5 @@ public class MainActivity extends AppCompatActivity
             }
             mLoadingPB.setVisibility(View.INVISIBLE);
         }
-    }*/
-}
+    } */
+

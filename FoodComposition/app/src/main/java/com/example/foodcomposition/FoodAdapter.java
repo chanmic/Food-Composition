@@ -7,22 +7,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.foodcomposition.utils.FoodUtils;
+//import com.example.foodcomposition.utils.FoodUtils;
+import com.example.foodcomposition.data.FoodNameRepo;
+
+import java.util.List;
 
 public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.SearchResultViewHolder> {
 
-    private FoodUtils.FoodRepo[] mRepos;
+    //private FoodUtils.FoodRepo[] mRepos;
+    private List<FoodNameRepo> mRepos;
+
     OnSearchItemClickListener mSearchItemClickListener;
 
     public interface OnSearchItemClickListener {
-        void onSearchItemClick(FoodUtils.FoodRepo repo);
+        void onSearchItemClick(FoodNameRepo repo);
     }
 
     FoodAdapter(OnSearchItemClickListener searchItemClickListener){
         mSearchItemClickListener = searchItemClickListener;
     }
 
-    public void updateSearchResults(FoodUtils.FoodRepo[] repos) {
+    public void updateSearchResults(List<FoodNameRepo> repos) {
         mRepos = repos;
         notifyDataSetChanged();
     }
@@ -30,7 +35,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.SearchResultVi
     @Override
     public int getItemCount() {
         if (mRepos != null) {
-            return mRepos.length;
+            return mRepos.size();
         } else {
             return 0;
         }
@@ -46,7 +51,7 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.SearchResultVi
 
     @Override
     public void onBindViewHolder(@NonNull SearchResultViewHolder holder, int position) {
-        holder.bind(mRepos[position]);
+        holder.bind(mRepos.get(position));
     }
 
     class SearchResultViewHolder extends RecyclerView.ViewHolder {
@@ -59,15 +64,14 @@ public class FoodAdapter extends RecyclerView.Adapter<FoodAdapter.SearchResultVi
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FoodUtils.FoodRepo searchResult = mRepos[getAdapterPosition()];
+                    FoodNameRepo searchResult = mRepos.get(getAdapterPosition());
                     mSearchItemClickListener.onSearchItemClick(searchResult);
                 }
             });
         }
 
-        public void bind(FoodUtils.FoodRepo repo) {
-            String text = repo.name;
-            mSearchResultTV.setText(text);
+        public void bind(FoodNameRepo repo) {
+            mSearchResultTV.setText(repo.FoodName);
         }
     }
 }

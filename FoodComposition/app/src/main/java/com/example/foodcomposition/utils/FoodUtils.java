@@ -1,8 +1,10 @@
 package com.example.foodcomposition.utils;
 
+import com.example.foodcomposition.data.FoodNameRepo;
 import com.google.gson.Gson;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class FoodUtils {
     public static final String EXTRA_FOOD_REPO = "FoodUtils.FoodRepo";
@@ -12,7 +14,7 @@ public class FoodUtils {
     }
 
     public static class FoodList implements Serializable {
-        public FoodRepo[] item;
+        public ArrayList<FoodNameRepo> items;
     }
 
     public static class FoodRepo implements Serializable {
@@ -28,11 +30,11 @@ public class FoodUtils {
         return url;
     }
 
-    public static FoodRepo[] parseFoodSearchResults(String json) {
+    public static ArrayList<FoodNameRepo> parseFoodSearchResults(String json) {
         Gson gson = new Gson();
         FoodSearchResults results = gson.fromJson(json, FoodSearchResults.class);
-        if (results != null && results.list.item != null) {
-            return results.list.item;
+        if (results != null && results.list != null) {
+            return results.list.items;
         } else {
             return null;
         }

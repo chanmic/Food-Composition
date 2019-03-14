@@ -11,4 +11,5 @@ public class FoodNameRepo implements Serializable {
     @NonNull
     @PrimaryKey
     public String FoodName;
+    public String ndbno;
 }
