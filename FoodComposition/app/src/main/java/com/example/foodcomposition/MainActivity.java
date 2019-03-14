@@ -1,5 +1,7 @@
 package com.example.foodcomposition;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -32,10 +34,11 @@ import com.example.foodcomposition.utils.FoodUtils;
 import com.example.foodcomposition.utils.NetworkUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements FoodAdapter.OnSearchItemClickListener,
-        LoaderManager.LoaderCallbacks<String> {
+        LoaderManager.LoaderCallbacks<String>, FoodRepoAdapter.OnFoodNameClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String REPOS_ARRAY_KEY = "foodRepos";
@@ -49,13 +52,16 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar mLoadingPB;
     private FoodAdapter mFoodAdapter;
     private DrawerLayout mDrawerLayout;
+    private RecyclerView mFoodRepoRV;
 
     private NavigationView navigationView;
+    private FoodViewModal mFoodViewModal;
 
     private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     private FoodUtils.FoodRepo[] mRepos;
     private FoodNameRepo mRepo;
+    private boolean mIsSaved = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +69,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mFoodListRV = (RecyclerView)findViewById(R.id.rv_food_list);
+        mFoodRepoRV = (RecyclerView)findViewById(R.id.rv_repo_items);
         mSearchBoxEt = findViewById(R.id.et_search_box);
         mLoadingErrorTV = findViewById(R.id.tv_loading_error);
         mLoadingPB = findViewById(R.id.pb_loading);
@@ -73,6 +80,7 @@ public class MainActivity extends AppCompatActivity
         mFoodAdapter = new FoodAdapter(this);
         mFoodListRV.setAdapter(mFoodAdapter);
 
+        mFoodViewModal = ViewModelProviders.of(this).get(FoodViewModal.class);
         //Nav drawer
         mDrawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nv_nav_drawer);
@@ -89,6 +97,19 @@ public class MainActivity extends AppCompatActivity
         }
 
         getSupportLoaderManager().initLoader(FOOD_SEARCH_LOADER_ID, null, this);
+
+        mFoodRepoRV.setLayoutManager(new LinearLayoutManager(this));
+        mFoodRepoRV.setHasFixedSize(true);
+        final FoodRepoAdapter adapter = new FoodRepoAdapter(this);
+        mFoodRepoRV.setAdapter(adapter);
+
+        FoodViewModal viewModal = ViewModelProviders.of(this).get(FoodViewModal.class);
+        viewModal.getAllFoodRepos().observe(this, new Observer<List<FoodNameRepo>>() {
+            @Override
+            public void onChanged(@Nullable List<FoodNameRepo> foodNameRepos) {
+                adapter.updateFoodName(foodNameRepos);
+            }
+        });
 
         Button searchButton = findViewById(R.id.btn_search);
         searchButton.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +134,18 @@ public class MainActivity extends AppCompatActivity
         String url = FoodUtils.buildFoodSearchURL(mRepo.FoodName,max);
         Log.d(TAG, "querying search URL: " + url);
         //new FoodSearchTask().execute(url);
+
+        mFoodViewModal.getFoodRepoByName(mRepo.FoodName).observe(this, new Observer<FoodNameRepo>() {
+            @Override
+            public void onChanged(@Nullable FoodNameRepo repo) {
+                if(repo != null) {
+                    mIsSaved = true;
+                } else {
+                    mIsSaved = false;
+                    mFoodViewModal.insertFoodRepo(mRepo);
+                }
+            }
+        });
 
         Bundle args = new Bundle();
         args.putString(SEARCH_URL_KEY, url);
@@ -208,6 +241,13 @@ public class MainActivity extends AppCompatActivity
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onFoodNameClick(FoodNameRepo foodNameRepo) {
+        refreshDisplay(foodNameRepo.FoodName);
+        mSearchBoxEt.setText(foodNameRepo.FoodName);
+        mDrawerLayout.closeDrawers();
     }
 
 /*    class FoodSearchTask extends AsyncTask<String, Void, String> {
