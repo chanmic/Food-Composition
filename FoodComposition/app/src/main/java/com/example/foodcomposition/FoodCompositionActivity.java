@@ -1,5 +1,6 @@
 package com.example.foodcomposition;
 
+import android.app.SearchManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -116,6 +117,9 @@ public class FoodCompositionActivity extends AppCompatActivity
             case R.id.action_share:
                 shareRepo();
                 return true;
+            case R.id.action_google:
+                searchGoogle();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -129,6 +133,14 @@ public class FoodCompositionActivity extends AppCompatActivity
                     .setText(shareText)
                     .setChooserTitle(R.string.share_chooser_title)
                     .startChooser();
+        }
+    }
+
+    public void searchGoogle() {
+        if (mRepo != null) {
+            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
+            intent.putExtra(SearchManager.QUERY, mRepo.name);
+            startActivity(intent);
         }
     }
 }

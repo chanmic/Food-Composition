@@ -5,6 +5,7 @@
     <string name="loading_error">Unable to run query.  Check internet.</string>
     <string name="share_repo_text">%1$s: "ndbno number is: "%2$s</string>
     <string name="share_chooser_title">How do you want to share this repo?</string>
+    <string name="action_google">Search on Google</string>
     <string name="action_share">Share</string>
     <string name="action_settings">Settings</string>
 

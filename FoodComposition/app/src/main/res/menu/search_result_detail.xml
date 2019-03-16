@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_google"
+        android:icon="@drawable/ic_action_google"
+        android:title="@string/action_google"
+        app:showAsAction="ifRoom"/>
+
+    <item
         android:id="@+id/action_share"
         android:icon="@drawable/ic_action_share"
         android:title="@string/action_share"
